@@ -5,9 +5,9 @@ name: Generate Daily Market Briefing (AM & PM)
 on:
   schedule:
     # รันรอบเช้า (AM) ตอน 00:00 UTC (7:00 น. เวลาไทย)
-    - cron: '0 0 * * *'    # <--- เปลี่ยนแปลงจุดที่ 1
+    - cron: '5 0 * * *'    # <--- เปลี่ยนแปลงจุดที่ 1
     # รันรอบบ่าย (PM) ตอน 05:00 UTC (12:00 น. เวลาไทย)
-    - cron: '0 5 * * *'
+    - cron: '5 5 * * *'
 
   workflow_dispatch:
     inputs:
