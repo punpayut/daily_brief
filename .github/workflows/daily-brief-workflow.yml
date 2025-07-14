@@ -4,8 +4,8 @@ name: Generate Daily Market Briefing (AM & PM)
 
 on:
   schedule:
-    # รันรอบเช้า (AM) ตอน 23:00 UTC (6:00 น. เวลาไทย)
-    - cron: '0 23 * * *'
+    # รันรอบเช้า (AM) ตอน 00:00 UTC (7:00 น. เวลาไทย)
+    - cron: '0 0 * * *'    # <--- เปลี่ยนแปลงจุดที่ 1
     # รันรอบบ่าย (PM) ตอน 05:00 UTC (12:00 น. เวลาไทย)
     - cron: '0 5 * * *'
 
@@ -30,8 +30,8 @@ jobs:
           if [ "${{ github.event_name }}" == "schedule" ]; then
             current_hour=$(date -u +'%H')
             # ตรวจสอบเวลาที่แก้ไขใหม่:
-            # ถ้าเป็นชั่วโมงที่ 23 (UTC) คือรอบเช้า (AM)
-            if [ "$current_hour" -eq 23 ]; then
+            # ถ้าเป็นชั่วโมงที่ 0 (UTC) คือรอบเช้า (AM)
+            if [ "$current_hour" -eq 0 ]; then # <--- เปลี่ยนแปลงจุดที่ 2
               echo "period=AM" >> $GITHUB_OUTPUT
             else
               # นอกนั้น (คือชั่วโมงที่ 5) เป็นรอบบ่าย (PM)
