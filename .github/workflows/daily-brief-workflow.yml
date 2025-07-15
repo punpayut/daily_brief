@@ -1,13 +1,11 @@
-# .github/workflows/daily-brief-workflow.yml (ฉบับแก้ไขเวลา)
-
 name: Generate Daily Market Briefing (AM & PM)
 
 on:
   schedule:
-    # รันรอบเช้า (AM) ตอน 00:00 UTC (7:00 น. เวลาไทย)
-    - cron: '5 0 * * *'    # <--- เปลี่ยนแปลงจุดที่ 1
-    # รันรอบบ่าย (PM) ตอน 05:00 UTC (12:00 น. เวลาไทย)
-    - cron: '5 5 * * *'
+    # รันรอบเช้า (AM) ตอน 00:05 UTC (7:05 น. เวลาไทย)
+    - cron: '5 0 * * *'
+    # รันรอบบ่าย (PM) ตอน 05:05 UTC (13:05 น. เวลาไทย)
+    - cron: '5 6 * * *'
 
   workflow_dispatch:
     inputs:
@@ -24,22 +22,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      ### START: ส่วนที่แก้ไข ###
+      # แก้ไข Step นี้เพื่อเพิ่มความแม่นยำ
       - name: Determine Period
         id: get_period
         run: |
           if [ "${{ github.event_name }}" == "schedule" ]; then
-            current_hour=$(date -u +'%H')
-            # ตรวจสอบเวลาที่แก้ไขใหม่:
-            # ถ้าเป็นชั่วโมงที่ 0 (UTC) คือรอบเช้า (AM)
-            if [ "$current_hour" -eq 0 ]; then # <--- เปลี่ยนแปลงจุดที่ 2
+            # ตรวจสอบว่า workflow ถูก trigger จาก cron string ไหนโดยตรง
+            # วิธีนี้แม่นยำ 100% ไม่ว่า job จะดีเลย์ไปนานแค่ไหนก็ตาม
+            if [ "${{ github.event.schedule }}" == "5 0 * * *" ]; then
               echo "period=AM" >> $GITHUB_OUTPUT
             else
-              # นอกนั้น (คือชั่วโมงที่ 5) เป็นรอบบ่าย (PM)
+              # ถ้าไม่ใช่ schedule ของรอบเช้า ก็ถือว่าเป็นรอบบ่าย
               echo "period=PM" >> $GITHUB_OUTPUT
             fi
           elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            # ส่วนนี้สำหรับรันด้วยมือ ยังคงทำงานเหมือนเดิม
             echo "period=${{ github.event.inputs.period }}" >> $GITHUB_OUTPUT
           fi
+      ### END: ส่วนที่แก้ไข ###
 
       - name: Checkout repository
         uses: actions/checkout@v4
